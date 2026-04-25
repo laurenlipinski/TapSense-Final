@@ -4,7 +4,7 @@
     <title>TapSense Dashboard</title>
     <style>
         :root {
-            --current-color: #6200ee; /* Initial branding color */
+            --current-color: #6200ee;
         }
 
         body {
@@ -22,20 +22,17 @@
             overflow: hidden;
         }
 
-        /* The Dynamic Logo */
         h1 {
             font-size: 80px;
             margin: 0;
             letter-spacing: 4px;
             text-transform: uppercase;
             color: var(--current-color);
-            /* Brightness makes the logo a lighter/vibrant version of the background */
             filter: brightness(1.5);
             transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 10;
         }
 
-        /* Welcome Text */
         #instructions {
             font-size: 22px;
             margin: 20px 0 40px 0;
@@ -46,12 +43,10 @@
             transition: opacity 0.5s;
         }
 
-        /* Layout Change on Connection */
         body.connected h1 {
             font-size: 35px;
             position: absolute;
             top: 40px;
-            opacity: 0.9;
         }
 
         body.connected #instructions,
@@ -60,12 +55,11 @@
             pointer-events: none;
         }
 
-        /* The Corner Numbers */
         #value {
             position: absolute;
-            bottom: 20px;
+            bottom: 80px; /* Moved up slightly to make room for the key */
             right: 30px;
-            font-size: 80px;
+            font-size: 60px;
             font-weight: bold;
             font-family: monospace;
             opacity: 0;
@@ -74,6 +68,46 @@
 
         body.connected #value {
             opacity: 0.4;
+        }
+
+        /* --- Intensity Key Styles --- */
+        #intensityKey {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px); /* Modern frosted glass look */
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 15px 0;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.8s ease;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.connected #intensityKey {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .key-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
         }
 
         button {
@@ -106,6 +140,21 @@
 
 <div id="value">0.00</div>
 
+<div id="intensityKey">
+    <div class="key-item">
+        <div class="dot" style="background: blue; color: blue;"></div>
+        <span>Light</span>
+    </div>
+    <div class="key-item">
+        <div class="dot" style="background: purple; color: purple;"></div>
+        <span>Medium</span>
+    </div>
+    <div class="key-item">
+        <div class="dot" style="background: red; color: red;"></div>
+        <span>Hard</span>
+    </div>
+</div>
+
 <script>
     const connectBtn = document.getElementById('connectBtn');
     const valueDisplay = document.getElementById('value');
@@ -127,7 +176,6 @@
 
             await characteristic.startNotifications();
 
-            // Initial UI update on successful connection
             connectBtn.innerText = "Connected!";
             connectBtn.style.background = "#4caf50";
 
@@ -145,11 +193,8 @@
 
                     if (!isNaN(val)) {
                         valueDisplay.innerText = val.toFixed(2);
-
-                        // Trigger the UI transition to "Dashboard Mode"
                         document.body.classList.add('connected');
 
-                        // Background Color & Logo Logic
                         let newBg = "#121212";
                         if (val >= 8.0) { newBg = "red"; }
                         else if (val >= 4.0) { newBg = "purple"; }
@@ -157,8 +202,6 @@
 
                         document.body.style.backgroundColor = newBg;
 
-                        // Update the logo color variable
-                        // If background is dark, we use the brand purple for the logo
                         const logoColor = (newBg === "#121212") ? "#6200ee" : newBg;
                         document.documentElement.style.setProperty('--current-color', logoColor);
                     }
