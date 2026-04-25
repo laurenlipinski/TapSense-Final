@@ -57,7 +57,7 @@
 
         #value {
             position: absolute;
-            bottom: 80px; /* Moved up slightly to make room for the key */
+            bottom: 80px;
             right: 30px;
             font-size: 60px;
             font-weight: bold;
@@ -70,14 +70,13 @@
             opacity: 0.4;
         }
 
-        /* --- Intensity Key Styles --- */
         #intensityKey {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(5px); /* Modern frosted glass look */
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             gap: 40px;
@@ -107,7 +106,6 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            box-shadow: 0 0 10px currentColor;
         }
 
         button {
@@ -142,15 +140,15 @@
 
 <div id="intensityKey">
     <div class="key-item">
-        <div class="dot" style="background: blue; color: blue;"></div>
+        <div class="dot" style="background: blue;"></div>
         <span>Light</span>
     </div>
     <div class="key-item">
-        <div class="dot" style="background: purple; color: purple;"></div>
+        <div class="dot" style="background: purple;"></div>
         <span>Medium</span>
     </div>
     <div class="key-item">
-        <div class="dot" style="background: red; color: red;"></div>
+        <div class="dot" style="background: red;"></div>
         <span>Hard</span>
     </div>
 </div>
@@ -192,7 +190,13 @@
                     const val = parseFloat(completeLine);
 
                     if (!isNaN(val)) {
-                        valueDisplay.innerText = val.toFixed(2);
+                        // NEW LOGIC: Force a clean 0.00 if noise is below 1.0
+                        if (val < 1.0) {
+                            valueDisplay.innerText = "0.00";
+                        } else {
+                            valueDisplay.innerText = val.toFixed(2);
+                        }
+
                         document.body.classList.add('connected');
 
                         let newBg = "#121212";
@@ -209,7 +213,7 @@
             });
         } catch (error) {
             console.error(error);
-            alert("Connection failed. Make sure Bluetooth is on and the CPB isn't connected to another device!");
+            alert("Connection failed. Make sure Bluetooth is on!");
         }
     });
 </script>
