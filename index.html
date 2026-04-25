@@ -3,6 +3,10 @@
 <head>
     <title>TapSense Dashboard</title>
     <style>
+        :root {
+            --current-color: #6200ee; /* Initial branding color */
+        }
+
         body {
             font-family: sans-serif;
             text-align: center;
@@ -12,58 +16,93 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* This centers the button and title vertically */
+            justify-content: center;
             align-items: center;
-            transition: background 0.2s;
-            overflow: hidden; /* Prevents accidental scrollbars */
+            transition: background 0.4s ease;
+            overflow: hidden;
         }
 
-        /* Making the title bigger and more "Dashboard" style */
+        /* The Dynamic Logo */
         h1 {
-            font-size: 70px;
-            margin-bottom: 20px;
+            font-size: 80px;
+            margin: 0;
             letter-spacing: 4px;
             text-transform: uppercase;
+            color: var(--current-color);
+            /* Brightness makes the logo a lighter/vibrant version of the background */
+            filter: brightness(1.5);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        /* Welcome Text */
+        #instructions {
+            font-size: 22px;
+            margin: 20px 0 40px 0;
+            opacity: 0.8;
+            max-width: 500px;
+            line-height: 1.6;
+            font-weight: 300;
+            transition: opacity 0.5s;
+        }
+
+        /* Layout Change on Connection */
+        body.connected h1 {
+            font-size: 35px;
+            position: absolute;
+            top: 40px;
             opacity: 0.9;
         }
 
-        /* Moving the numbers to the bottom-right corner */
+        body.connected #instructions,
+        body.connected #connectBtn {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* The Corner Numbers */
         #value {
             position: absolute;
             bottom: 20px;
             right: 30px;
-            font-size: 80px; /* Smaller than 150px so it fits nicely in the corner */
+            font-size: 80px;
             font-weight: bold;
-            font-family: monospace; /* Monospace keeps numbers from "jumping" when they change */
-            opacity: 0.6; /* Makes it look like a sleek overlay */
+            font-family: monospace;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        body.connected #value {
+            opacity: 0.4;
         }
 
         button {
-            padding: 20px 40px;
-            font-size: 24px;
+            padding: 20px 45px;
+            font-size: 22px;
             cursor: pointer;
-            border-radius: 50px; /* More rounded "pill" shape */
+            border-radius: 50px;
             border: none;
             background: #6200ee;
             color: white;
             font-weight: bold;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.1s, background 0.2s, opacity 0.5s;
         }
 
-        button:active {
-            transform: scale(0.95); /* Little bounce when you click */
-        }
-
-        button:hover {
-            background: #7c4dff;
-        }
+        button:hover { background: #7c4dff; }
+        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-<h1>TapSense</h1>
-<button id="connectBtn">Connect to CPB</button>
+<h1 id="logo">TapSense</h1>
+
+<div id="instructions">
+    Let’s get started with TapSense!<br>
+    Connect your device to begin tracking.
+</div>
+
+<button id="connectBtn">Connect Board</button>
 
 <div id="value">0.00</div>
 
@@ -87,6 +126,8 @@
             const characteristic = await service.getCharacteristic(UART_TX_CHARACTERISTIC_UUID);
 
             await characteristic.startNotifications();
+
+            // Initial UI update on successful connection
             connectBtn.innerText = "Connected!";
             connectBtn.style.background = "#4caf50";
 
@@ -105,25 +146,27 @@
                     if (!isNaN(val)) {
                         valueDisplay.innerText = val.toFixed(2);
 
-                        // Background Color Logic matching your CPB code
-                        if (val >= 8.0) {
-                            document.body.style.backgroundColor = "red";
-                        }
-                        else if (val >= 4.0) {
-                            document.body.style.backgroundColor = "purple";
-                        }
-                        else if (val > 1.0) {
-                            document.body.style.backgroundColor = "blue";
-                        }
-                        else {
-                            document.body.style.backgroundColor = "#121212";
-                        }
+                        // Trigger the UI transition to "Dashboard Mode"
+                        document.body.classList.add('connected');
+
+                        // Background Color & Logo Logic
+                        let newBg = "#121212";
+                        if (val >= 8.0) { newBg = "red"; }
+                        else if (val >= 4.0) { newBg = "purple"; }
+                        else if (val > 1.0) { newBg = "blue"; }
+
+                        document.body.style.backgroundColor = newBg;
+
+                        // Update the logo color variable
+                        // If background is dark, we use the brand purple for the logo
+                        const logoColor = (newBg === "#121212") ? "#6200ee" : newBg;
+                        document.documentElement.style.setProperty('--current-color', logoColor);
                     }
                 }
             });
         } catch (error) {
             console.error(error);
-            alert("Connection failed. Make sure Bluetooth is on and the board isn't connected to your phone!");
+            alert("Connection failed. Make sure Bluetooth is on and the CPB isn't connected to another device!");
         }
     });
 </script>
