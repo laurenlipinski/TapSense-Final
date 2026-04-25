@@ -8,40 +8,56 @@
             text-align: center;
             background: #121212;
             color: white;
-            padding-top: 50px;
-            transition: background 0.2s; /* Smooth color transitions */
             margin: 0;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center; /* This centers the button and title vertically */
             align-items: center;
+            transition: background 0.2s;
+            overflow: hidden; /* Prevents accidental scrollbars */
         }
 
-        /* Making the title bigger */
+        /* Making the title bigger and more "Dashboard" style */
         h1 {
-            font-size: 60px;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+            font-size: 70px;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0.9;
         }
 
+        /* Moving the numbers to the bottom-right corner */
         #value {
-            font-size: 150px;
+            position: absolute;
+            bottom: 20px;
+            right: 30px;
+            font-size: 80px; /* Smaller than 150px so it fits nicely in the corner */
             font-weight: bold;
-            margin-top: 40px;
+            font-family: monospace; /* Monospace keeps numbers from "jumping" when they change */
+            opacity: 0.6; /* Makes it look like a sleek overlay */
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 20px 40px;
+            font-size: 24px;
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 50px; /* More rounded "pill" shape */
             border: none;
             background: #6200ee;
             color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            transition: transform 0.1s, background 0.2s;
         }
 
-        button:hover { background: #7c4dff; }
+        button:active {
+            transform: scale(0.95); /* Little bounce when you click */
+        }
+
+        button:hover {
+            background: #7c4dff;
+        }
     </style>
 </head>
 <body>
